@@ -1,11 +1,31 @@
-apt install nginx -y
-apt install npm -y
-apt install git -y
-apt install node -y
-apt install nodejs -y
-git clone https://github.com/carlosandrescardenas/movie-analyst-ui.git
-cd /movie-analyst-ui/
-npm install
-echo export BACK_HOST=${dns} | sudo tee -a /etc/environment
-cd /movie-analyst-ui/
-node server.js
+---
+
+- name: Playbook - Front
+  hosts: localhost
+  become: true
+  tasks:
+      - name: Install inital programs
+        apt: name={{ item }} state=installed
+        with_items:
+          - nginx
+          - npm
+          - git
+          - node
+          - nodejs
+
+      - name: Clone github repository
+        git:
+          repo: https://github.com/carlosandrescardenas/movie-analyst-ui.git
+          dest: /home/ubuntu/repos
+          clone: yes
+          update: yes
+      
+      - name: install NPM
+        shell: npm i
+        args:
+          chdir: /home/ubuntu/repos/movie-analyst-ui
+
+
+#echo export BACK_HOST=${dns} | sudo tee -a /etc/environment
+#cd /movie-analyst-ui/
+#node server.js
